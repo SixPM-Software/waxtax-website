@@ -179,8 +179,8 @@
                             value = history[date]*float(data['amount'])
                         else:
                             value = False
-                        row.append(f"${round(price,3)}")
-                        row.append(f"${round(value,3)}")
+                        row.append(f"${round(price,5)}")
+                        row.append(f"${round(value,5)}")
                     else:
                         row.append("N/A")
                         row.append("N/A")
