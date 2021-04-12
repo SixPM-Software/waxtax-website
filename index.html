@@ -1,132 +1,199 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WaxTax</title>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>WaxTax</title>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/brython/3.9.0/brython.min.js">
-    </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/brython/3.9.0/brython_stdlib.min.js">
-    </script>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/brython/3.9.0/brython.min.js">
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/brython/3.9.0/brython_stdlib.min.js">
+        </script>
 
+        <link rel="icon" href="img/favicon-32x32.png">
+
+        <!-- Bootstrap CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
+        <style>
+            .b-example-divider {
+                height: 3rem;
+                background-color: rgba(0, 0, 0, .1);
+                border: solid rgba(0, 0, 0, .15);
+                border-width: 1px 0;
+                box-shadow: inset 0 .5em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em rgba(0, 0, 0, .15);
+            }
+
+        </style>
     </head>
-<body onload="brython()">
-    <h1>WaxTax</h1>
-    <p>Made with ❤️ by stuckatsixpm</p>
-    
-    <form>
-    <label for="account_input">Address:</label> 
-    <input type="text" id="account_input" placeholder="Enter account address" value="c4vr2.wam">
-    <label for="start_date_input">Start Date (UTC):</label>
-    <input type="datetime-local" id="start_date_input">
-    <label for="end_date_input">End Date (UTC):</label>
-    <input type="datetime-local" id="end_date_input">
-    </form>
-    <button id="data-btn">Get Data</button>
+    <body onload="brython()">
 
-    <div id="data" class="card">Click the "Get data" button. This may take a while depending on your date range, but "shouldn't" break.</div>
-    <span id="output"></span>
-    <!-- Ajax call -->
-    <script type="text/python" id="script3">
-        import base64
-        import calendar
-        import csv
-        import datetime
-        import json
-        from operator import itemgetter
+            <div class="bg-dark text-secondary px-4 py-5 text-center">
+                <div class="py-5">
+                    <img class="d-block mx-auto mb-4" src="img/gold stamp.png" alt="" width="72" height="72">
+                    <h1 class="display-5 fw-bold text-white">WaxTax</h1>
+                    <div class="col-lg-6 mx-auto">
+                        <p class="fs-5 mb-4">Get your WAX transactions in an easy to reconcile format.</p>
+                        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                            <a href="#data-form"><button type="button" class="btn btn-outline-info btn-lg px-4 me-sm-3 fw-bold">Get my transactions!</button></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="px-4 py-5 my-5 text-center">
+            <div class="col-lg-6 mx-auto">
+                <p>This is still a prototype. Enter your address and date range below, then click the "Submit" button.</p> 
+                <p>The website will search for transactions and then collate them into a format that can be copied into a spreadsheet.
+                    This may take a while depending on your date range and number of transactions, but "shouldn't" break.
+                After the processing is complete, click "Copy" to copy the output to your clipboard.</p>
+                <p>Support for AtomicAsset Transfers (and a prettier layout) is coming soon!</p>
+            </div>
+            </div>
+          </div>
+          <div class="b-example-divider"></div>
+          <a id="data-form"/>
+          <div class="px-4 py-5 my-5 text-center">
+            <div class="col-lg-6 mx-auto">
+                <form>
+                    <h2>Enter your address and date range</h2>
+                    <div class="mb-3">
+                      <label for="wax-address" class="form-label">WAX address</label>
+                      <input type="text" class="form-control" id="wax-address" aria-describedby="WAXHelp">
+                      <div id="WAXHelp" class="form-text">We don't store your WAX address, nor will we send it unwanted airdrops.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="start_date_input">Start Date (UTC):</label>
+                        <input type="datetime-local" id="start_date_input">
+                        <label for="end_date_input">End Date (UTC):</label>
+                        <input type="datetime-local" id="end_date_input">
+                    </div>
+                    <button id="submit-btn" class="btn btn-primary">Submit</button>
+                  </form>
+                  <br>
+                  <div class="input-group">
+                    <textarea class="form-control" id="output" placeholder="Your text will appear here!"></textarea>
+                    <button class="btn btn-outline-secondary" id="copy-btn" type="button">Copy!</button>
+                </div>
+            </div>
+            </div>
+          </div>
+          <div class="b-example-divider"></div>
 
-        from browser import document, ajax, html, aio
-
-        global scan_round
-        scan_round = 1
         
-        global transactions
-        transactions = []
-
-        global skip
-        skip = 0
-
-        def dt2ts(dt):
-            """Converts a datetime object to UTC timestamp
-
-            naive datetime will be considered UTC.
-
-            """
-
-            return calendar.timegm(dt.utctimetuple())
-
-        async def process():
-            global transactions
-            
-            req = ajax.ajax()
-            url = "https://api.coingecko.com/api/v3/coins/wax/market_chart?vs_currency=usd&days=max"
-            req.open('GET', url, False)
-            req.send()
-            history = dict(json.loads(req.responseText)['prices'])
-            output = []
-            headers = ["timestamp","block","contract","wax","wax_historical","usd","trx_id","data"]
-            for i in transactions:
-                row = []
-                row.append(str(i['timestamp']))
-                row.append(str(i['block_num']))
-                row.append(str(i['act']['account'])+"-"+str(i['act']['name']))
-                data = i['act']['data']
-
-                if data.get("amount",False) and data.get("symbol",False)=="WAX":
-                    row.append(data['amount'])
-                    date = datetime.datetime.fromisoformat(i['timestamp'].split("T")[0])
-                    date = dt2ts(date)*1000
-                    price = history[date]
-                    value = history[date]*float(data['amount'])
-                    row.append(f"${round(price,3)}")
-                    row.append(f"${round(value,3)}")
-                else:
-                    row.append("N/A")
-                    row.append("N/A")
-                    row.append("N/A")
-                row.append(str(i['trx_id']))
-                row.append(str(data))
-                output.append([str(val) for val in row])
-                
-            output = sorted(output, key=itemgetter(0))
-            output = [headers]+output
-            mega_string = "\n".join(["\t".join(row) for row in output])
-            b64 = base64.b64encode(mega_string.encode("utf-8")).decode("utf-8")
-            document['data'] <= html.A("Export to local file",href="data:text/plain;charset=utf-8;base64," + b64,download="transactions.tsv")
 
 
+        <footer class="footer mt-auto py-3 bg-light">
+            <div class="container">
+              <span class="text-muted">Built in Python with ❤️ by stuckatsixpm</span>
+            </div>
+        </footer>
 
-        async def request(skip):
-            req = ajax.ajax()
-            account = document['account_input'].value
-            start_date = document['start_date_input'].value
-            end_date = document['end_date_input'].value
-            global skip
+        <script type="text/python" id="script3">
+            import base64
+            import calendar
+            import csv
+            import datetime
+            import json
+            from operator import itemgetter
+
+            from browser import document, ajax, html, aio
+
             global scan_round
-            url = f'https://api.waxsweden.org/v2/history/get_actions?account={account}&skip={skip}&after={start_date}&before={end_date}&limit=100'
-            transaction_data = []
-            req.open('GET', url, False)
-            req.send()
-            new = json.loads(req.responseText)['actions']
-            transactions.extend(new)
+            scan_round = 1
+            
+            global transactions
+            transactions = []
 
-            if len(new) < 100:
+            global skip
+            skip = 0
+
+            def dt2ts(dt):
+                """Converts a datetime object to UTC timestamp
+
+                naive datetime will be considered UTC.
+
+                """
+
+                return calendar.timegm(dt.utctimetuple())
+
+            async def process():
                 global transactions
+                print("transactions",len(transactions))
+                req = ajax.ajax()
+                url = "https://api.coingecko.com/api/v3/coins/wax/market_chart?vs_currency=usd&days=max"
+                req.open('GET', url, False)
+                req.send()
+                history = dict(json.loads(req.responseText)['prices'])
+                output = []
+                headers = ["timestamp","block","contract","wax","wax_historical","usd","trx_id","data"]
+                for i in transactions:
+                    row = []
+                    row.append(str(i['timestamp']))
+                    row.append(str(i['block_num']))
+                    row.append(str(i['act']['account'])+"-"+str(i['act']['name']))
+                    data = i['act']['data']
+
+                    if data.get("amount",False) and data.get("symbol",False)=="WAX":
+                        row.append(data['amount'])
+                        date = datetime.datetime.fromisoformat(i['timestamp'].split("T")[0])
+                        date = dt2ts(date)*1000
+                        price = history.get(date,False)
+                        if price:
+                            value = history[date]*float(data['amount'])
+                        else:
+                            value = False
+                        row.append(f"${round(price,3)}")
+                        row.append(f"${round(value,3)}")
+                    else:
+                        row.append("N/A")
+                        row.append("N/A")
+                        row.append("N/A")
+                    row.append(str(i['trx_id']))
+                    row.append(str(data))
+                    output.append([str(val) for val in row])
+                print("Made it to here")
+                output = sorted(output, key=itemgetter(0))
+                output = [headers]+output
+                output = ["\t".join(row) for row in output]
+                mega_string = "\n".join(output)
+                document['output'].value = mega_string
+                
+
+                
+                    
+                
+
+            async def request():
+                account = document['wax-address'].value
+                start_date = document['start_date_input'].value
+                end_date = document['end_date_input'].value
+                global skip
+                global scan_round
+                while True:
+                    print(scan_round)
+                    req = ajax.ajax()
+                    url = f'https://api.waxsweden.org/v2/history/get_actions?account={account}&skip={skip}&after={start_date}&before={end_date}&limit=100'
+                    req.open('GET', url, False)
+                    req.send()
+                    new = json.loads(req.responseText)['actions']
+                    print(len(new))
+                    transactions.extend(new)
+                    if len(new) < 100:
+                        break
+                    else:
+                        skip += 100
+                        scan_round += 1
                 await aio.run(process())
-                return
-            else:
-                skip += 100
-                scan_round += 1
-                await aio.run(request(skip))
 
-        document['data-btn'].bind("click",lambda e:aio.run(request(skip)))
+            def copy_func(e):
+                document['output'].focus()
+                document['output'].select()
+                document.execCommand("copy")
+            document['copy-btn'].bind('click',copy_func)
+            document['submit-btn'].bind("click",lambda e:aio.run(request()))
 
-    </script>
-    <!-- Option 1: Bootstrap Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
+        </script>
+        <!-- Option 1: Bootstrap Bundle with Popper -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
 
-</body>
+    </body>
 </html> 
