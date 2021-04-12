@@ -29,7 +29,7 @@
     <button id="data-btn">Get Data</button>
 
     <p>Click the "Get data" button to export a TSV (tab-separated value) file of your transactions. This may take a while depending on your date range, but "shouldn't" break. Support for transfer of Atomic Assets is coming soon!</p>
-    
+    <div id="download"></div>
     <p>Made with ❤️ by stuckatsixpm</p>
     <span id="output"></span>
     <!-- Ajax call -->
@@ -98,7 +98,7 @@
             output = [headers]+output
             mega_string = "\n".join(["\t".join(row) for row in output])
             b64 = base64.b64encode(mega_string.encode("utf-8")).decode("utf-8")
-            document['data'] <= html.A("Export to local file",href="data:text/plain;charset=utf-8;base64," + b64,download="transactions.tsv")
+            document['download'] <= html.A("Export to local file",href="data:text/plain;charset=utf-8;base64," + b64,download="transactions.tsv")
 
 
 
