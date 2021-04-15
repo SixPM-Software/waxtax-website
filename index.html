@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>WaxTax</title>
+        <title>WAXTax</title>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/brython/3.9.0/brython.min.js">
         </script>
@@ -31,7 +31,7 @@
             <div class="bg-dark text-secondary px-4 py-5 text-center">
                 <div class="py-5">
                     <img class="d-block mx-auto mb-4" src="img/gold stamp.png" alt="" width="72" height="72">
-                    <h1 class="display-5 fw-bold text-white">WaxTax (Beta)</h1>
+                    <h1 class="display-5 fw-bold text-white">WAXTax (Beta)</h1>
                     <div class="col-lg-6 mx-auto">
                         <p class="fs-5 mb-4">Get your WAX transactions in an easy to reconcile format.</p>
                         <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
@@ -185,14 +185,19 @@
                 req.send()
                 history = dict(json.loads(req.responseText)['prices'])
                 output = []
-                headers = ["timestamp","block","contract","wax","wax_historical","usd","trx_id","data"]
+                headers = ["timestamp","block","contract","from","to","wax","wax_historical","usd","trx_id","data"]
                 for i in transactions:
                     row = []
                     row.append(str(i['timestamp']))
                     row.append(str(i['block_num']))
-                    row.append(str(i['act']['account'])+"-"+str(i['act']['name']))
+                    row.append(str(i['act']['account'])+" - "+str(i['act']['name']))
                     data = i['act']['data']
-
+                    if i['act']['name'] == "transfer":
+                        row.append(data['from'])
+                        row.append(data['to'])
+                    else:
+                        row.append("N/A")
+                        row.append("N/A")
                     if data.get("amount",False) and data.get("symbol",False)=="WAX":
                         row.append(data['amount'])
                         date = datetime.datetime.fromisoformat(i['timestamp'].split("T")[0])
@@ -200,10 +205,11 @@
                         price = history.get(date,False)
                         if price:
                             value = history[date]*float(data['amount'])
+                            row.append(f"${round(price,5)}")
+                            row.append(f"${round(value,5)}")
                         else:
-                            value = False
-                        row.append(f"${round(price,5)}")
-                        row.append(f"${round(value,5)}")
+                            row.append(f"No Data")
+                            row.append(f"No Data")
                     else:
                         row.append("N/A")
                         row.append("N/A")
