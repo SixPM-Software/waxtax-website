@@ -306,7 +306,7 @@
                 global scan_round
                 while True:
                     req = ajax.ajax()
-                    url = f'https://api.waxsweden.org/v2/history/get_actions?account={account}&skip={skip}&after={start_date}&before={end_date}&limit=100'
+                    url = f'https://hyperion.wax.eosdetroit.io/v2/history/get_actions?account={account}&skip={skip}&after={start_date}&before={end_date}&limit=100'
                     req.open('GET', url, False)
                     req.send()
                     new = json.loads(req.responseText)['actions']
