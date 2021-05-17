@@ -224,6 +224,7 @@
             import csv
             import datetime
             import json
+            import time
             from operator import itemgetter
 
             from browser import document, ajax, html, aio
@@ -312,11 +313,15 @@
                     skip = 0
                     scan_round = 1
                     while True:
-                        req = ajax.ajax()
-                        url = f'{endpoint}?account={account}&skip={skip}&after={start_date}&before={end_date}&limit=100&sort=asc'
-                        req.open('GET', url, False)
-                        req.send()
-                        new = json.loads(req.responseText)['actions']
+                        try:
+                            req = ajax.ajax()
+                            url = f'{endpoint}?account={account}&skip={skip}&after={start_date}&before={end_date}&limit=100&sort=asc'
+                            req.open('GET', url, False)
+                            req.send()
+                            new = json.loads(req.responseText)['actions']
+                        except:
+                            time.sleep(1)
+                            continue
                         temp_transactions.extend(new)
                         print(len(temp_transactions),"transactions scanned")
                         if len(new) < 100:
