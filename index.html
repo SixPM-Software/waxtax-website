@@ -228,6 +228,7 @@
             from operator import itemgetter
 
             from browser import document, ajax, html, aio
+            import browser.timer
 
             global scan_round
             scan_round = 1
@@ -320,7 +321,7 @@
                             req.send()
                             new = json.loads(req.responseText)['actions']
                         except:
-                            time.sleep(1)
+                            await aio.sleep(1)
                             continue
                         temp_transactions.extend(new)
                         print(len(temp_transactions),"transactions scanned")
