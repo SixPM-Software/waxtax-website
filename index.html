@@ -41,16 +41,9 @@
                 </div>
             </div>
         </div>
-        <div class="px-4 py-5 my-5 text-center">
-            <div class="col-lg-6 mx-auto">
-                <p>This is still a prototype. Enter your address and date range below, then click the "Submit" button.</p> 
-                <p>The website will search for transactions and then collate them into a format that can be copied into a spreadsheet.
-                    The output includes date and time, block number, transaction ID, and WAX and USD values of the transactions.
-                    This may take a while depending on your date range and number of transactions, but "shouldn't" break.
-                After the processing is complete, click "Copy" to copy the output to your clipboard.</p>
-                <p>Support for AtomicAsset Transfers is coming soon!</p>
-            </div>
-            </div>
+
+        
+
           <div class="b-example-divider"></div>
           <a id="data-form"/>
           <div class="container col-xl-10 col-xxl-8 px-4 py-5">
@@ -306,7 +299,7 @@
                 global scan_round
                 while True:
                     req = ajax.ajax()
-                    url = f'https://hyperion.wax.eosdetroit.io/v2/history/get_actions?account={account}&skip={skip}&after={start_date}&before={end_date}&limit=100'
+                    url = f'https://api.waxsweden.org/v2/history/get_actions?account={account}&skip={skip}&after={start_date}&before={end_date}&limit=100'
                     req.open('GET', url, False)
                     req.send()
                     new = json.loads(req.responseText)['actions']
