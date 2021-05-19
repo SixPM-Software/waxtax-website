@@ -308,7 +308,7 @@
                 end_date = document['end_date_input'].value
                 global skip
                 global scan_round
-                endpoints = ["https://hyperion.wax.eosdetroit.io/v2/history/get_actions","https://api.waxsweden.org/v2/history/get_actions"]
+                endpoints = ["https://hyperion.wax.eosdetroit.io/v2/history/get_actions"]
                 temp_transactions = []
                 for endpoint in endpoints:
                     skip = 0
@@ -321,7 +321,7 @@
                             req.send()
                             new = json.loads(req.responseText)['actions']
                         except:
-                            await aio.sleep(1)
+                            await aio.sleep(10)
                             continue
                         temp_transactions.extend(new)
                         print(len(temp_transactions),"transactions scanned")
@@ -330,6 +330,7 @@
                             break
                         else:
                             skip += 100
+                            await aio.sleep(1)
                             scan_round += 1
                 for i in temp_transactions:
                     if i not in transactions:
