@@ -316,7 +316,7 @@
                         try:
                             req = ajax.ajax()
                             print(skip)
-                            url = f'{endpoint}?account={account}&skip={skip}&after={start_date}&before={end_date}&limit=10000&sort=asc'
+                            url = f'{endpoint}?account={account}&skip={skip}&after={start_date}&before={end_date}&limit=1000&sort=asc'
                             req.open('GET', url, False)
                             req.send()
                             data = json.loads(req.responseText)
@@ -331,7 +331,7 @@
                         if len(new) < 10000:
                             print("Done")
                             break
-                        elif len(transactions) > total+10000:
+                        elif len(transactions) > total+1000:
                             print("Done")    
                             break
                         else:
