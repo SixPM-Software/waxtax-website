@@ -316,6 +316,7 @@
                     while True:
                         try:
                             req = ajax.ajax()
+                            print(skip)
                             url = f'{endpoint}?account={account}&skip={skip}&after={start_date}&before={end_date}&limit=100&sort=asc'
                             req.open('GET', url, False)
                             req.send()
