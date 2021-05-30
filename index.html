@@ -309,7 +309,6 @@
                 global skip
                 global scan_round
                 endpoints = ["https://api.wax.alohaeos.com/v2/history/get_actions"]
-                temp_transactions = []
                 for endpoint in endpoints:
                     skip = 0
                     scan_round = 1
@@ -317,7 +316,7 @@
                         try:
                             req = ajax.ajax()
                             print(skip)
-                            url = f'{endpoint}?account={account}&skip={skip}&after={start_date}&before={end_date}&limit=1000&sort=asc'
+                            url = f'{endpoint}?account={account}&skip={skip}&after={start_date}&before={end_date}&limit=10000&sort=asc'
                             req.open('GET', url, False)
                             req.send()
                             data = json.loads(req.responseText)
@@ -326,22 +325,19 @@
                         except:
                             await aio.sleep(10)
                             continue
-                        temp_transactions.extend(new)
+                        transactions.extend(new)
                         print(len(new), "transactios added")
-                        print(len(temp_transactions),"transactions scanned")
-                        if len(new) < 1000:
+                        print(len(transactions),"transactions scanned")
+                        if len(new) < 10000:
                             print("Done")
                             break
-                        elif len(temp_transactions) > total:
+                        elif len(transactions) > total:
                             print("Done")    
                             break
                         else:
-                            skip += 1000
+                            skip += 10000
                             await aio.sleep(0.5)
                             scan_round += 1
-                for i in temp_transactions:
-                    if i not in transactions:
-                        transactions.append(i)
                 await aio.run(process())
 
             def copy_func(e):
