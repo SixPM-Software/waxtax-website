@@ -316,7 +316,7 @@
                         try:
                             req = ajax.ajax()
                             print(skip)
-                            url = f'{endpoint}?account={account}&skip={skip}&after={start_date}&before={end_date}&limit=1000&sort=asc'
+                            url = f'{endpoint}?account={account}&skip={skip}&after={start_date}&before={end_date}&limit=10000&sort=asc'
                             req.open('GET', url, False)
                             req.send()
                             data = json.loads(req.responseText)
@@ -328,15 +328,11 @@
                         transactions.extend(new)
                         print(len(new), "transactios added")
                         print(len(transactions),"transactions scanned")
-                        if len(new) < 1000:
+                        if len(new) < 10000:
                             print("Done")
                             break
-                        elif len(transactions) > total+1000:
-                            print("Done")    
-                            break
                         else:
-                            skip += 1000
-                            await aio.sleep(0.5)
+                            skip += 10000
                             scan_round += 1
                 await aio.run(process())
 
