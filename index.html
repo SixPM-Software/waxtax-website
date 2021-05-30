@@ -335,7 +335,7 @@
                             print("Done")    
                             break
                         else:
-                            skip += 10000
+                            skip += 1000
                             await aio.sleep(0.5)
                             scan_round += 1
                 await aio.run(process())
