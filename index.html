@@ -320,7 +320,9 @@
                             url = f'{endpoint}?account={account}&skip={skip}&after={start_date}&before={end_date}&limit=1000&sort=asc'
                             req.open('GET', url, False)
                             req.send()
-                            new = json.loads(req.responseText)['actions']
+                            data = json.loads(req.responseText)
+                            new = data['actions']
+                            total = data['total']['value']
                         except:
                             await aio.sleep(10)
                             continue
@@ -329,6 +331,9 @@
                         print(len(temp_transactions),"transactions scanned")
                         if len(new) < 1000:
                             print("Done")
+                            break
+                        elif len(temp_transactions) > total:
+                            print("Done")    
                             break
                         else:
                             skip += 1000
