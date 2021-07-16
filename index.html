@@ -328,11 +328,11 @@
                         transactions.extend(new)
                         print(len(new), "transactios added")
                         print(len(transactions),"transactions scanned")
-                        if len(new) < 10000:
+                        if len(new) < 1000:
                             print("Done")
                             break
                         else:
-                            skip += 10000
+                            skip += 1000
                             scan_round += 1
                 await aio.run(process())
 
