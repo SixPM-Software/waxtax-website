@@ -316,7 +316,7 @@
                         try:
                             req = ajax.ajax()
                             print(skip)
-                            url = f'{endpoint}?account={account}&skip={skip}&after={start_date}&before={end_date}&limit=10000&sort=asc'
+                            url = f'{endpoint}?account={account}&skip={skip}&after={start_date}&before={end_date}&limit=10000&sort=asc&filter=eosio.token%3Atransfer'
                             req.open('GET', url, False)
                             req.send()
                             data = json.loads(req.responseText)
@@ -340,6 +340,7 @@
                 document['output'].focus()
                 document['output'].select()
                 document.execCommand("copy")
+                
             document['copy-btn'].bind('click',copy_func)
             document['submit-btn'].bind("click",lambda e:aio.run(request()))
 
