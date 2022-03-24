@@ -43,6 +43,7 @@
         </div>
         <div class="px-4 py-5 my-5 text-center">
             <div class="col-lg-6 mx-auto">
+                <h2>IMPORTANT: We strongly recommend using the <a href="https://github.com/SixPM-Software/waxtax">desktop version of WAXTax</a>, as this web version has not scaled well with the increased number of transactions that most wallets do in the current times.</h2>
                 <p>Enter your address and date range below, then click the "Submit" button. It is recommended not using a date in the last 7 days, as it can take the API endpoints some time to update.</p> 
                 <p>The website will search for transactions and then collate them into a format that can be copied into a spreadsheet.
                     The output includes date and time, block number, transaction ID, and WAX and USD values of the transactions.
@@ -326,7 +327,7 @@
                             await aio.sleep(10)
                             continue
                         transactions.extend(new)
-                        print(len(new), "transactios added")
+                        print(len(new), "transactions added")
                         print(len(transactions),"transactions scanned")
                         if len(new) < 1000:
                             print("Done")
